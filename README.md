@@ -16,8 +16,7 @@ sugar you might find in other libraries.
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `wind` to your list of dependencies in `mix.exs`:
+The package can be installed by adding `wind` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
@@ -56,5 +55,5 @@ end
 
 ## TODO
 
-* Add telemetry.
-* Add additional event handling.
+* Add telemetry
+* Add additional event handling
