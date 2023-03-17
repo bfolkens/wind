@@ -1,6 +1,6 @@
 # Wind
 
-`Wind`.  A pleasant Elixir websocket client framework, based on Mint.
+A pleasant Elixir websocket client framework, based on Mint and Mint.WebSocket. 🌱
 
 ## Installation
 
