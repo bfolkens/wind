@@ -24,6 +24,21 @@ defmodule Wind.Stream do
   ```
   """
 
+  @type frame :: Mint.WebSocket.shorthand_frame() | Mint.WebSocket.frame()
+
+  @doc """
+  Invoked after a connection is established. Override to setup post-connection state.
+  """
+  @callback handle_connect(state :: term) ::
+              {:noreply, new_state :: term} | {:reply, frame :: frame(), new_state :: term}
+
+  @doc """
+  Invoked for each received frame.
+  """
+  @callback handle_frame(frame :: frame(), state :: term) ::
+              {:reply, frame :: frame(), new_state :: term}
+              | {:noreply, new_state :: term}
+
   def start_link(module, default, options \\ []) when is_list(default) do
     GenServer.start_link(module, default, options)
   end
@@ -33,11 +48,12 @@ defmodule Wind.Stream do
   end
 
   # TODO: Add telemetry
-  # TODO: opts for ping (timer milliseconds?)
   defmacro __using__(opts) do
     quote location: :keep do
       use GenServer
       require Logger
+
+      @behaviour Wind.Stream
 
       @impl true
       def init(opts) do
@@ -53,9 +69,15 @@ defmodule Wind.Stream do
       def handle_continue(:connect, %{opts: opts} = state) do
         uri = Keyword.get(opts, :uri)
         headers = Keyword.get(opts, :headers, [])
-        http_opts = Keyword.get(opts, :http_opts, [protocols: [:http1], transport_opts: [verify: :verify_none]])
+
+        http_opts =
+          Keyword.get(opts, :http_opts,
+            protocols: [:http1],
+            transport_opts: [verify: :verify_none]
+          )
 
         Logger.debug(fn -> "Connecting to #{uri}" end)
+
         case Wind.connect(uri, headers, http_opts) do
           {:ok, conn, ref} ->
             Logger.debug(fn -> "Connected" end)
@@ -112,7 +134,10 @@ defmodule Wind.Stream do
       end
 
       @impl true
-      def handle_info({_, _, "HTTP/1.1 101 Switching Protocols" <> _} = http_reply_message, %{conn_info: {conn, ref, _}} = state) do
+      def handle_info(
+            {_, _, "HTTP/1.1 101 Switching Protocols" <> _} = http_reply_message,
+            %{conn_info: {conn, ref, _}} = state
+          ) do
         Logger.debug(fn -> "Upgrading to websocket" end)
         {:ok, conn, ref, websocket} = Wind.setup(conn, ref, http_reply_message)
         state = %{state | conn_info: {conn, ref, websocket}}
@@ -146,7 +171,13 @@ defmodule Wind.Stream do
 
         {:noreply, state}
       end
+
+      @doc false
+      def handle_connect(state) do
+        {:noreply, state}
+      end
+
+      defoverridable handle_connect: 1
     end
   end
 end
-
