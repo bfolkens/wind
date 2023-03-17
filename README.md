@@ -1,12 +1,12 @@
 # Wind 🌬️
 
-A pleasant Elixir websocket client framework, based on Mint and Mint.WebSocket.
+A pleasant Elixir websocket client library, based on Mint and Mint.WebSocket.
 
 This library was extracted from a high-volume websocket client in an
-application where speed was a critical priority.  Since the implementing code
+application where speed is a critical priority.  Since the implementing code
 was highly varied, this library aims to provide a minimal framework that
 doesn't get in the way and provides composable tools to avoid the typical
-Mint.WebSocket boilerplate.
+boilerplate.
 
 Note that each connection starts a `GenServer` instead of all the connections
 being managed by a dispacting process.  This design decision was intentional in
@@ -53,3 +53,8 @@ defmodule BinanceMonitor do
   end
 end
 ```
+
+## TODO
+
+* Add telemetry.
+* Add additional event handling.

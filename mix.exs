@@ -54,7 +54,7 @@ defmodule Wind.MixProject do
   end
 
   defp description do
-    "Wind.  A pleasant Elixir websocket client framework, based on Mint."
+    "Wind.  A pleasant Elixir websocket client library based on Mint."
   end
 
   defp docs do

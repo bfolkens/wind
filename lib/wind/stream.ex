@@ -48,7 +48,6 @@ defmodule Wind.Stream do
     GenServer.cast(pid, {:send, message})
   end
 
-  # TODO: Add telemetry
   defmacro __using__(opts) do
     quote location: :keep do
       use GenServer
