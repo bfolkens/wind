@@ -30,7 +30,8 @@ defmodule Wind.Stream do
   Invoked after a connection is established. Override to setup post-connection state.
   """
   @callback handle_connect(state :: term) ::
-              {:noreply, new_state :: term} | {:reply, frame :: frame(), new_state :: term}
+              {:reply, frame :: frame(), new_state :: term}
+              | {:noreply, new_state :: term}
 
   @doc """
   Invoked for each received frame.
