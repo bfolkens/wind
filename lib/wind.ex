@@ -1,6 +1,6 @@
 defmodule Wind do
   @moduledoc """
-  `Wind`.  A pleasant Elixir websocket client library based on Mint.
+  A pleasant Elixir websocket client library based on Mint.
   """
 
   @doc """
