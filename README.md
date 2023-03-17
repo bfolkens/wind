@@ -1,16 +1,18 @@
-# Wind
+# Wind 🌬️
 
 A pleasant Elixir websocket client framework, based on Mint and Mint.WebSocket.
 
 This library was extracted from a high-volume websocket client in an
 application where speed was a critical priority.  Since the implementing code
-was highly varied, the library aims to provide a minimal framework that doesn't
-get in the way and provides composable tools to get the job done.
+was highly varied, this library aims to provide a minimal framework that
+doesn't get in the way and provides composable tools to avoid the typical
+Mint.WebSocket boilerplate.
 
 Note that each connection starts a `GenServer` instead of all the connections
 being managed by a dispacting process.  This design decision was intentional in
-order to maintain the speed requirement.  However, it comes at a cost of some
-syntax sugar you might find in other libraries.
+order to maintain the speed requirement (and prevent the dispatching process
+from becoming the bottleneck).  However, this may come at a cost of some syntax
+sugar you might find in other libraries.
 
 ## Installation
 
