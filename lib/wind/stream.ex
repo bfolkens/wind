@@ -34,7 +34,7 @@ defmodule Wind.Stream do
 
   # TODO: Add telemetry
   # TODO: opts for ping (timer milliseconds?)
-  defmacro __using__(_opts) do
+  defmacro __using__(opts) do
     quote location: :keep do
       use GenServer
       require Logger
@@ -69,15 +69,40 @@ defmodule Wind.Stream do
         end
       end
 
-      defp start_ping_timer() do
-        Process.send_after(self(), :ping_timer, 30_000)
-      end
-
       defp maybe_handle_reply({:noreply, state}), do: {:noreply, state}
 
       defp maybe_handle_reply({:reply, message, %{conn_info: {conn, ref, websocket}} = state}) do
         {:ok, conn, websocket} = Wind.send(conn, ref, websocket, message)
         {:noreply, %{state | conn_info: {conn, ref, websocket}}}
+      end
+
+      unquote do
+        if opts[:ping_timer] do
+          quote do
+            @impl true
+            def handle_info(:ping_timer, %{conn_info: {conn, ref, websocket}} = state) do
+              {:ok, conn, websocket} = Wind.send(conn, ref, websocket, {:ping, ""})
+              {:noreply, %{state | conn_info: {conn, ref, websocket}}}
+            end
+
+            def handle_frame({:ping, _data}, %{conn_info: {conn, ref, websocket}} = state) do
+              Logger.debug(fn -> "ping" end)
+              {:reply, {:pong, ""}, state}
+            end
+
+            def handle_frame({:pong, _data}, state) do
+              Logger.debug(fn -> "pong" end)
+              # TODO: Check timer diff?
+              Process.send_after(self(), :ping_timer, unquote(opts[:ping_timer]))
+
+              {:noreply, state}
+            end
+
+            defp start_ping_timer() do
+              Process.send_after(self(), :ping_timer, unquote(opts[:ping_timer]))
+            end
+          end
+        end
       end
 
       @impl true
@@ -87,19 +112,18 @@ defmodule Wind.Stream do
       end
 
       @impl true
-      def handle_info(:ping_timer, %{conn_info: {conn, ref, websocket}} = state) do
-        {:ok, conn, websocket} = Wind.send(conn, ref, websocket, {:ping, ""})
-        {:noreply, %{state | conn_info: {conn, ref, websocket}}}
-      end
-
-      @impl true
       def handle_info({_, _, "HTTP/1.1 101 Switching Protocols" <> _} = http_reply_message, %{conn_info: {conn, ref, _}} = state) do
         Logger.debug(fn -> "Upgrading to websocket" end)
         {:ok, conn, ref, websocket} = Wind.setup(conn, ref, http_reply_message)
         state = %{state | conn_info: {conn, ref, websocket}}
 
-        # TODO: Make conditional with "use" opts
-        start_ping_timer()
+        unquote do
+          if opts[:ping_timer] do
+            quote do
+              start_ping_timer()
+            end
+          end
+        end
 
         state
         |> handle_connect()
@@ -119,19 +143,6 @@ defmodule Wind.Stream do
 
             state
           end)
-
-        {:noreply, state}
-      end
-
-      def handle_frame({:ping, _data}, %{conn_info: {conn, ref, websocket}} = state) do
-        Logger.debug(fn -> "ping" end)
-        {:reply, {:pong, ""}, state}
-      end
-
-      def handle_frame({:pong, _data}, state) do
-        Logger.debug(fn -> "pong" end)
-        # TODO: Check timer diff?
-        Process.send_after(self(), :ping_timer, 30_000)
 
         {:noreply, state}
       end
