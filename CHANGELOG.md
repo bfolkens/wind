@@ -7,11 +7,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [0.2.0] - 2023-03-19
+
 ### Breaking
 
 - Change Wind.Stream to Wind.Client to keep namespace for future functionality.
 
-## [0.0.1] - 2023-03-17
+## [0.1.0] - 2023-03-17
 
 - Initial implementation
     - includes basic tools to build websocket clients, more to come...
