@@ -11,7 +11,7 @@ doesn't get in the way and provides composable tools to avoid the typical
 boilerplate.
 
 Note that each connection starts a `GenServer` instead of all the connections
-being managed by a dispacting process.  This design decision was intentional in
+being managed by a dispatching process.  This design decision was intentional in
 order to maintain the speed requirement (and prevent the dispatching process
 from becoming the bottleneck).  However, this may come at a cost of some syntax
 sugar you might find in other libraries.
