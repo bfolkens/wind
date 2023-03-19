@@ -1,14 +1,14 @@
-defmodule Wind.Stream do
+defmodule Wind.Client do
   @moduledoc """
-  `Stream` is the basis for creating a connection module in your application.
+  `Client` is the basis for creating a connection module in your application.
 
   ```elixir
     defmodule Example do
-      use Wind.Stream
+      use Wind.Client
 
       def start_link() do
         uri = URI.new!("http://example.com/ws")
-        Wind.Stream.start_link(__MODULE__, uri: uri)
+        Wind.Client.start_link(__MODULE__, uri: uri)
       end
 
       def handle_connect(state) do
@@ -53,7 +53,7 @@ defmodule Wind.Stream do
       use GenServer
       require Logger
 
-      @behaviour Wind.Stream
+      @behaviour Wind.Client
 
       @impl true
       def init(opts) do

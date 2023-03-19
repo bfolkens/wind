@@ -32,11 +32,11 @@ Below is a minimal example to show how you could create a websocket client.
 
 ```elixir
 defmodule BinanceMonitor do
-  use Wind.Stream, ping_timer: 30_000
+  use Wind.Client, ping_timer: 30_000
 
   def start_link() do
     uri = URI.new!("wss://data-stream.binance.com/ws")
-    Wind.Stream.start_link(__MODULE__, uri: uri)
+    Wind.Client.start_link(__MODULE__, uri: uri)
   end
 
   def handle_connect(state) do
