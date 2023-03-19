@@ -10,11 +10,16 @@ was highly varied, this library aims to provide a minimal framework that
 doesn't get in the way and provides composable tools to avoid the typical
 boilerplate.
 
-Note that each connection starts a `GenServer` instead of all the connections
-being managed by a dispatching process.  This design decision was intentional in
-order to maintain the speed requirement (and prevent the dispatching process
-from becoming the bottleneck).  However, this may come at a cost of some syntax
+Note that each connection starts its own `GenServer` instead of pooling all the
+connections into a dispatching process.  This design decision was intentional
+in order to maintain the speed requirement and prevent the dispatching process
+from becoming the bottleneck.  However, this may come at a cost of some syntax
 sugar you might find in other libraries.
+
+## WIP
+
+This library is still a work in progress - more will be extracted soon.
+Breaking changes should be expected until a stable 1.0 release is published.
 
 ## Installation
 
