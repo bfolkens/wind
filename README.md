@@ -1,7 +1,6 @@
 # Wind 🌬️
 
-[![hex.pm version][hex-version-badge]][hex-package]
-[![hex.pm license][hex-license-badge]][license]
+[![Hex Docs](https://img.shields.io/badge/hex-docs-lightblue.svg)](https://hexdocs.pm/wind/)
 
 A pleasant Elixir websocket client library, based on Mint and Mint.WebSocket.
 
@@ -60,7 +59,3 @@ end
 
 * Add telemetry
 * Add additional event handling
-
-[hex-version-badge]: https://img.shields.io/hexpm/v/wind.svg
-[hex-license-badge]: https://img.shields.io/hexpm/l/wind.svg
-[hex-package]: https://hex.pm/packages/wind
