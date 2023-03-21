@@ -93,21 +93,28 @@ defmodule Wind.Client do
 
       defp maybe_handle_reply({:noreply, state}), do: {:noreply, state}
 
-      defp maybe_handle_reply({:reply, message, %{conn_info: {conn, ref, websocket}} = state}) do
-        {:ok, conn, websocket} = Wind.send(conn, ref, websocket, message)
-        {:noreply, %{state | conn_info: {conn, ref, websocket}}}
+      defp maybe_handle_reply({:reply, message, state}), do: send_frame(state, message)
+
+      defp send_frame(%{conn_info: {conn, ref, websocket}} = state, message) do
+        case Wind.send(conn, ref, websocket, message) do
+          {:ok, conn, websocket} ->
+            {:noreply, %{state | conn_info: {conn, ref, websocket}}}
+
+          {:error, %Mint.WebSocket{} = websocket, reason} ->
+            {:stop, %{state | conn_info: {conn, ref, websocket}}, reason}
+
+          {:error, conn, reason} ->
+            {:stop, %{state | conn_info: {conn, ref, websocket}}, reason}
+        end
       end
 
       unquote do
         if opts[:ping_timer] do
           quote do
             @impl true
-            def handle_info(:ping_timer, %{conn_info: {conn, ref, websocket}} = state) do
-              {:ok, conn, websocket} = Wind.send(conn, ref, websocket, {:ping, ""})
-              {:noreply, %{state | conn_info: {conn, ref, websocket}}}
-            end
+            def handle_info(:ping_timer, state), do: send_frame(state, {:ping, ""})
 
-            def handle_frame({:ping, _data}, %{conn_info: {conn, ref, websocket}} = state) do
+            def handle_frame({:ping, _data}, state) do
               Logger.debug(fn -> "ping" end)
               {:reply, {:pong, ""}, state}
             end
@@ -128,10 +135,7 @@ defmodule Wind.Client do
       end
 
       @impl true
-      def handle_cast({:send, message}, %{conn_info: {conn, ref, websocket}} = state) do
-        {:ok, conn, websocket} = Wind.send(conn, ref, websocket, message)
-        {:noreply, %{state | conn_info: {conn, ref, websocket}}}
-      end
+      def handle_cast({:send, message}, state), do: send_frame(state, message)
 
       @impl true
       def handle_info(
