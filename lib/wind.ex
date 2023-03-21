@@ -95,8 +95,7 @@ defmodule Wind do
 
   """
   @spec decode(Mint.HTTP.t(), Mint.Types.request_ref(), Mint.WebSocket.t(), term()) ::
-          {:ok, Mint.HTTP.t(), Mint.Types.request_ref(), Mint.WebSocket.t(),
-           [Mint.WebSocket.frame() | {:error, term}]}
+          {:ok, Mint.HTTP.t(), Mint.WebSocket.t(), [Mint.WebSocket.frame() | {:error, term}]}
           | {:error, Mint.WebSocket.t(), any}
   def decode(conn, ref, websocket, message) do
     with {:ok, conn, [{:data, ^ref, data}]} <- Mint.WebSocket.stream(conn, message),
