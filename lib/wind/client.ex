@@ -100,10 +100,7 @@ defmodule Wind.Client do
           {:ok, conn, websocket} ->
             {:noreply, %{state | conn_info: {conn, ref, websocket}}}
 
-          {:error, %Mint.WebSocket{} = websocket, reason} ->
-            {:stop, %{state | conn_info: {conn, ref, websocket}}, reason}
-
-          {:error, conn, reason} ->
+          {:error, _conn_or_websocket, reason} ->
             {:stop, %{state | conn_info: {conn, ref, websocket}}, reason}
         end
       end
