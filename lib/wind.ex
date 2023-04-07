@@ -46,7 +46,7 @@ defmodule Wind do
 
   @doc """
   Statelessly setup a websocket connection.  This is a convenience function that
-  wraps Mint.WebSocket the setup functions for a websocket.
+  wraps the Mint.WebSocket setup functions for a websocket.
 
   ## Examples
 
