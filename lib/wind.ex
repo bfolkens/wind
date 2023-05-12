@@ -10,7 +10,7 @@ defmodule Wind do
 
   ## Examples
 
-      iex> URL.new!("wss://socketsbay.com/wss/v2/1/demo/") |> Wind.connect()
+      iex> URL.new!("wss://example.com/ws") |> Wind.connect()
       {:ok, conn, ref}
 
   """
@@ -37,7 +37,6 @@ defmodule Wind do
         query -> uri.path <> "?" <> query
       end
 
-    # We need verify_none to use the ssh tunnel.  Keep this until we set up WS proxy.
     with {:ok, conn} <- Mint.HTTP.connect(http_scheme, uri.host, uri.port, opts),
          {:ok, conn, ref} <- Mint.WebSocket.upgrade(ws_scheme, conn, path || "/", headers) do
       {:ok, conn, ref}

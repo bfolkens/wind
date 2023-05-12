@@ -3,13 +3,16 @@ defmodule WindTest do
 
   @moduletag :requires_internet_connection
 
-  test "connect/1 should connect" do
-    uri = URI.new!("wss://socketsbay.com/wss/v2/1/demo/")
-    assert {:ok, _conn, _ref} = Wind.connect(uri)
+  describe "with a sample host" do
+    setup [:sample_uri]
+
+    test "connect/1 should connect", %{uri: uri} do
+      assert {:ok, _conn, _ref} = Wind.connect(uri)
+    end
   end
 
   describe "with an active connection" do
-    setup [:connect]
+    setup [:sample_uri, :connect]
 
     test "setup_await/2 should upgrade the websocket connection", %{conn: conn, ref: ref} do
       assert {:ok, _conn, _ref, _websocket} = Wind.setup_await(conn, ref)
@@ -17,15 +20,21 @@ defmodule WindTest do
   end
 
   describe "with an active websocket" do
-    setup [:connect, :upgrade]
+    setup [:sample_uri, :connect, :upgrade]
 
     test "send/4 should send a message", %{conn: conn, ref: ref, websocket: websocket} do
       assert {:ok, _conn, _websocket} = Wind.send(conn, ref, websocket, {:text, "test"})
     end
   end
 
-  defp connect(_) do
-    uri = URI.new!("wss://socketsbay.com/wss/v2/1/demo/")
+  defp sample_uri(_) do
+    host = System.get_env("ECHO_URL") || "ws://localhost/"
+    uri = URI.new!(host)
+
+    %{host: host, uri: uri}
+  end
+
+  defp connect(%{uri: uri}) do
     {:ok, conn, ref} = Wind.connect(uri)
 
     %{conn: conn, ref: ref}
