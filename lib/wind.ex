@@ -58,7 +58,8 @@ defmodule Wind do
           {:ok, Mint.HTTP.t(), Mint.Types.request_ref(), Mint.WebSocket.t()}
           | {:error, Mint.HTTP.t(), Mint.Types.error(), [Mint.Types.response()]}
           | :unknown
-  def setup(conn, ref, http_reply_message, opts \\ []) do
+  def setup(conn, ref, http_reply_message, opts \\ [])
+      when not is_nil(conn) and not is_nil(ref) do
     with {:ok, conn, [{:status, ^ref, status}, {:headers, ^ref, resp_headers}, {:done, ^ref}]} <-
            Mint.WebSocket.stream(conn, http_reply_message),
          {:ok, conn, websocket} <- Mint.WebSocket.new(conn, ref, status, resp_headers, opts) do
@@ -79,7 +80,8 @@ defmodule Wind do
           {:ok, Mint.HTTP.t(), Mint.Types.request_ref(), Mint.WebSocket.t()}
           | {:error, Mint.HTTP.t(), Mint.Types.error(), [Mint.Types.response()]}
           | :unknown
-  def setup_await(conn, ref) do
+  def setup_await(conn, ref)
+      when not is_nil(conn) and not is_nil(ref) do
     http_reply_message = receive(do: (message -> message))
     setup(conn, ref, http_reply_message)
   end
@@ -97,7 +99,8 @@ defmodule Wind do
   @spec decode(Mint.HTTP.t(), Mint.Types.request_ref(), Mint.WebSocket.t(), term()) ::
           {:ok, Mint.HTTP.t(), Mint.WebSocket.t(), [Mint.WebSocket.frame() | {:error, term}]}
           | {:error, Mint.WebSocket.t(), any}
-  def decode(conn, ref, websocket, message) do
+  def decode(conn, ref, websocket, message)
+      when not is_nil(conn) and not is_nil(ref) and not is_nil(websocket) and not is_nil(message) do
     with {:ok, conn, [{:data, ^ref, data}]} <- Mint.WebSocket.stream(conn, message),
          {:ok, websocket, data} <- Mint.WebSocket.decode(websocket, data) do
       {:ok, conn, websocket, data}
@@ -114,11 +117,12 @@ defmodule Wind do
       {:ok, conn, websocket}
 
   """
-  @spec send(Mint.HTTP.t(), Mint.Types.request_ref(), Mint.WebSocket.t(), term()) ::
+  @spec send(Mint.HTTP.t(), Mint.Types.request_ref(), Mint.WebSocket.t(), Mint.WebSocket.shorthand_frame() | Mint.WebSocket.frame()) ::
           {:ok, Mint.HTTP.t(), Mint.WebSocket.t()}
           | {:error, Mint.WebSocket.t(), any}
           | {:error, Mint.HTTP.t(), Mint.WebSocket.error()}
-  def send(conn, ref, websocket, message) do
+  def send(conn, ref, websocket, message)
+      when not is_nil(conn) and not is_nil(ref) and not is_nil(websocket) and not is_nil(message) do
     with {:ok, websocket, data} <- Mint.WebSocket.encode(websocket, message),
          {:ok, conn} <- Mint.WebSocket.stream_request_body(conn, ref, data) do
       {:ok, conn, websocket}
