@@ -105,6 +105,8 @@ defmodule Wind.Client do
         end
       end
 
+      defp send_frame(state, _message) when is_nil(state), do: {:noreply, state}
+
       unquote do
         if opts[:ping_timer] do
           quote do
