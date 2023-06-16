@@ -134,6 +134,8 @@ defmodule Wind.Client do
       @impl true
       def handle_cast({:send, message}, state), do: send_frame(state, message)
 
+      defoverridable handle_cast: 2
+
       @impl true
       def handle_info(
             {_, _, "HTTP/1.1 101 Switching Protocols" <> _} = http_reply_message,
@@ -175,13 +177,12 @@ defmodule Wind.Client do
       end
 
       @impl true
-      def handle_info(message, %{conn_info: {conn, ref, nil}} = state),
-        do: {:stop, {:error, message}, state}
+      def handle_info(message, state), do: {:stop, {:error, message}, state}
+
+      defoverridable handle_info: 2
 
       @doc false
-      def handle_connect(state) do
-        {:noreply, state}
-      end
+      def handle_connect(state), do: {:noreply, state}
 
       defoverridable handle_connect: 1
     end
