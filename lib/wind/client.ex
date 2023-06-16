@@ -93,9 +93,9 @@ defmodule Wind.Client do
 
       defp maybe_handle_reply({:noreply, state}), do: {:noreply, state}
 
-      defp maybe_handle_reply({:reply, message, state}), do: send_frame(state, message)
+      defp maybe_handle_reply({:reply, message, state}), do: send_frame(message, state)
 
-      defp send_frame(%{conn_info: {conn, ref, websocket}} = state, message) do
+      defp send_frame(message, %{conn_info: {conn, ref, websocket}} = state) do
         case Wind.send(conn, ref, websocket, message) do
           {:ok, conn, websocket} ->
             {:noreply, %{state | conn_info: {conn, ref, websocket}}}
@@ -109,7 +109,7 @@ defmodule Wind.Client do
         if opts[:ping_timer] do
           quote do
             @impl true
-            def handle_info(:ping_timer, state), do: send_frame(state, {:ping, ""})
+            def handle_info(:ping_timer, state), do: send_frame({:ping, ""}, state)
 
             def handle_frame({:ping, _data}, state) do
               Logger.debug(fn -> "ping" end)
@@ -132,7 +132,7 @@ defmodule Wind.Client do
       end
 
       @impl true
-      def handle_cast({:send, message}, state), do: send_frame(state, message)
+      def handle_cast({:send, message}, state), do: send_frame(message, state)
 
       defoverridable handle_cast: 2
 
