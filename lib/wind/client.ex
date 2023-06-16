@@ -157,7 +157,8 @@ defmodule Wind.Client do
       end
 
       @impl true
-      def handle_info(message, %{conn_info: {conn, ref, websocket}} = state) do
+      def handle_info(message, %{conn_info: {conn, ref, websocket}} = state)
+          when not is_nil(conn) and not is_nil(ref) and not is_nil(websocket) do
         {:ok, conn, websocket, data} = Wind.decode(conn, ref, websocket, message)
         state = %{state | conn_info: {conn, ref, websocket}}
 
@@ -172,6 +173,10 @@ defmodule Wind.Client do
 
         {:noreply, state}
       end
+
+      @impl true
+      def handle_info(message, %{conn_info: {conn, ref, nil}} = state),
+        do: {:stop, {:error, message}, state}
 
       @doc false
       def handle_connect(state) do
