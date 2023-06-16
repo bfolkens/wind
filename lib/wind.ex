@@ -112,7 +112,7 @@ defmodule Wind do
 
   ## Examples
 
-      iex> Wind.decode(conn, ref, websocket, message)
+      iex> Wind.send(conn, ref, websocket, message)
       {:ok, conn, websocket}
 
   """
