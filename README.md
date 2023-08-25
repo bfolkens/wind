@@ -64,3 +64,7 @@ end
 
 * Add telemetry
 * Add additional event handling
+
+## Sponsor
+
+Development sponsored in part by Cignals, LLC. - Bitcoin and Crypto [Order Flow](https://cignals.io/).
