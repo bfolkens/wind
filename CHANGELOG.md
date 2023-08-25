@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [0.3.0] - 2023-08-25
+
 - **BREAKING:** Return entire response from setup/3 and setup_await/2, this changes the return type.
 - Fixed issues for certain websocket servers that return extra data in the upgrade/setup phase (ws://echo.websocket.events/.ws)
 - Fixed defaults for non-TLS connections, was causing `:badarg` with `:gen_tcp`
