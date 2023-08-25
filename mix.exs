@@ -30,8 +30,8 @@ defmodule Wind.MixProject do
   defp deps do
     [
       {:mint, "~> 1.5.1"},
-      {:mint_web_socket, "~> 1.0.2"},
-      {:castore, "~> 0.1.22"},
+      {:mint_web_socket, "~> 1.0.3"},
+      {:castore, "~> 1.0"},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
     ]
   end
