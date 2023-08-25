@@ -67,4 +67,4 @@ end
 
 ## Sponsor
 
-Development sponsored in part by Cignals, LLC. - Bitcoin and Crypto [Order Flow](https://cignals.io/).
+Development sponsored in part by Cignals, LLC. - [Bitcoin and Crypto Order Flow Tools](https://cignals.io/).
