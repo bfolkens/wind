@@ -70,10 +70,15 @@ defmodule Wind.Client do
         uri = Keyword.get(opts, :uri)
         headers = Keyword.get(opts, :headers, [])
 
+        # Don't include TLS options when using non-TLS connection
+        # or the user will encounter a `:badarg` from `:gen_tcp`.
+        default_transport_opts =
+          uri.scheme == "wss" && [verify: :verify_none] || []
+
         http_opts =
           Keyword.get(opts, :http_opts,
             protocols: [:http1],
-            transport_opts: [verify: :verify_none]
+            transport_opts: default_transport_opts
           )
 
         Logger.debug(fn -> "Connecting to #{uri}" end)
