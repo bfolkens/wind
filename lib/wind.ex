@@ -50,21 +50,40 @@ defmodule Wind do
   ## Examples
 
       iex> Wind.setup(conn, ref, http_reply_message)
-      {:ok, conn, ref, websocket}
+      {:ok, conn, ref, websocket, response}
 
   """
   @spec setup(Mint.HTTP.t(), Mint.Types.request_ref(), term, list) ::
-          {:ok, Mint.HTTP.t(), Mint.Types.request_ref(), Mint.WebSocket.t()}
+          {:ok, Mint.HTTP.t(), Mint.Types.request_ref(), Mint.WebSocket.t(), [Mint.Types.response]}
           | {:error, Mint.HTTP.t(), Mint.Types.error(), [Mint.Types.response()]}
           | :unknown
   def setup(conn, ref, http_reply_message, opts \\ [])
       when not is_nil(conn) and not is_nil(ref) do
-    with {:ok, conn, [{:status, ^ref, status}, {:headers, ^ref, resp_headers}, {:done, ^ref}]} <-
-           Mint.WebSocket.stream(conn, http_reply_message),
+    with {:ok, conn, response} <- Mint.WebSocket.stream(conn, http_reply_message),
+         %{status: status, headers: resp_headers} <- decode_setup_response(response, ref),
          {:ok, conn, websocket} <- Mint.WebSocket.new(conn, ref, status, resp_headers, opts) do
-      {:ok, conn, ref, websocket}
+      {:ok, conn, ref, websocket, response}
     end
   end
+
+  defp decode_setup_response(response, ref, out \\ %{})
+
+  defp decode_setup_response([{:status, response_ref, status} | tail], ref, out) when response_ref == ref do
+    decode_setup_response(tail, ref, Map.put(out, :status, status))
+  end
+
+  defp decode_setup_response([{:headers, response_ref, headers} | tail], ref, out) when response_ref == ref do
+    decode_setup_response(tail, ref, Map.update(out, :headers, headers, fn existing -> [headers | existing] end))
+  end
+
+  defp decode_setup_response([{:data, response_ref, data} | tail], ref, out) when response_ref == ref do
+    decode_setup_response(tail, ref, Map.update(out, :data, data, fn existing -> [data | existing] end))
+  end
+
+  defp decode_setup_response([{:done, response_ref} | tail], ref, out) when response_ref == ref,
+    do: decode_setup_response(tail, ref, out)
+
+  defp decode_setup_response(_, _, out), do: out
 
   @doc """
   Synchronously setup a websocket connection.  See `setup/3`.
@@ -76,7 +95,7 @@ defmodule Wind do
 
   """
   @spec setup_await(Mint.HTTP.t(), Mint.Types.request_ref()) ::
-          {:ok, Mint.HTTP.t(), Mint.Types.request_ref(), Mint.WebSocket.t()}
+          {:ok, Mint.HTTP.t(), Mint.Types.request_ref(), Mint.WebSocket.t(), [Mint.Types.response()]}
           | {:error, Mint.HTTP.t(), Mint.Types.error(), [Mint.Types.response()]}
           | :unknown
   def setup_await(conn, ref)

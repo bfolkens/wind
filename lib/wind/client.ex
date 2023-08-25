@@ -142,7 +142,7 @@ defmodule Wind.Client do
             %{conn_info: {conn, ref, _}} = state
           ) do
         Logger.debug(fn -> "Upgrading to websocket" end)
-        {:ok, conn, ref, websocket} = Wind.setup(conn, ref, http_reply_message)
+        {:ok, conn, ref, websocket, _response} = Wind.setup(conn, ref, http_reply_message)
         state = %{state | conn_info: {conn, ref, websocket}}
 
         unquote do

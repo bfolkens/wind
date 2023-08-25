@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+- **BREAKING:** Return entire response from setup/3 and setup_await/2, this changes the return type.
+- Fixed issues for certain websocket servers that return extra data in the upgrade/setup phase (ws://echo.websocket.events/.ws)
+
 ## [0.2.4] - 2023-06-12
 
 - Rolled back fix from 0.2.3

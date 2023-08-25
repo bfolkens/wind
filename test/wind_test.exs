@@ -6,6 +6,10 @@ defmodule WindTest do
   describe "with a sample host" do
     setup [:sample_uri]
 
+    test "connect/1 should not connect to an invalid host" do
+      assert {:error, _reason} = URI.new!("ws://bad-host/") |> Wind.connect()
+    end
+
     test "connect/1 should connect", %{uri: uri} do
       assert {:ok, _conn, _ref} = Wind.connect(uri)
     end
@@ -15,7 +19,7 @@ defmodule WindTest do
     setup [:sample_uri, :connect]
 
     test "setup_await/2 should upgrade the websocket connection", %{conn: conn, ref: ref} do
-      assert {:ok, _conn, _ref, _websocket} = Wind.setup_await(conn, ref)
+      assert {:ok, _conn, _ref, _websocket, _response} = Wind.setup_await(conn, ref)
     end
   end
 
@@ -41,7 +45,7 @@ defmodule WindTest do
   end
 
   defp upgrade(%{conn: conn, ref: ref}) do
-    {:ok, conn, ref, websocket} = Wind.setup_await(conn, ref)
+    {:ok, conn, ref, websocket, _response} = Wind.setup_await(conn, ref)
 
     %{conn: conn, ref: ref, websocket: websocket}
   end
