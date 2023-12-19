@@ -112,9 +112,11 @@ defmodule Wind.Client do
 
       unquote do
         if opts[:ping_timer] do
+          ping_frame = Keyword.get(opts, :ping_frame, {:ping, ""})
+
           quote do
             @impl true
-            def handle_info(:ping_timer, state), do: send_frame({:ping, ""}, state)
+            def handle_info(:ping_timer, state), do: send_frame(unquote(ping_frame), state)
 
             def handle_frame({:ping, _data}, state) do
               Logger.debug(fn -> "ping" end)
