@@ -145,7 +145,7 @@ defmodule Wind.Client do
 
       @impl true
       def handle_info(
-            {_, _, "HTTP/1.1 101 Switching Protocols" <> _} = http_reply_message,
+            {_, _, "HTTP/1.1 101 " <> _} = http_reply_message,
             %{conn_info: {conn, ref, _}} = state
           ) do
         Logger.debug(fn -> "Upgrading to websocket" end)
