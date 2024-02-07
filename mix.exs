@@ -32,6 +32,7 @@ defmodule Wind.MixProject do
       {:mint, "~> 1.5.1"},
       {:mint_web_socket, "~> 1.0.3"},
       {:castore, "~> 1.0"},
+      {:jason, ">= 0.0.0", only: :dev},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
     ]
   end
