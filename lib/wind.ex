@@ -116,7 +116,9 @@ defmodule Wind do
   """
   @spec decode(Mint.HTTP.t(), Mint.Types.request_ref(), Mint.WebSocket.t(), term()) ::
           {:ok, Mint.HTTP.t(), Mint.WebSocket.t(), [Mint.WebSocket.frame() | {:error, term}]}
+          | {:error, Mint.HTTP.t(), Mint.Types.error(), [Mint.Types.response()]}
           | {:error, Mint.WebSocket.t(), any}
+          | :unknown
   def decode(conn, ref, websocket, message)
       when not is_nil(conn) and not is_nil(ref) and not is_nil(websocket) and not is_nil(message) do
     with {:ok, conn, [{:data, ^ref, data}]} <- Mint.WebSocket.stream(conn, message),

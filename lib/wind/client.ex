@@ -113,8 +113,6 @@ defmodule Wind.Client do
 
       defp maybe_handle_reply({:reply, message, state}), do: send_frame(message, state)
 
-      defp maybe_handle_reply({:stop, message, state}), do: {:stop, message, state}
-
       defp send_frame(message, %{conn_info: {conn, ref, websocket}} = state) do
         case Wind.send(conn, ref, websocket, message) do
           {:ok, conn, websocket} ->
@@ -216,8 +214,8 @@ defmodule Wind.Client do
           {:error, websocket, reason} ->
             handle_error(reason, %{state | conn_info: {conn, ref, websocket}})
 
-          {:error, reason} ->
-            handle_error(reason, state)
+          :unknown ->
+            handle_error(:unknown, state)
         end
       end
 
