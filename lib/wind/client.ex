@@ -138,8 +138,7 @@ defmodule Wind.Client do
 
             def handle_frame({:pong, _data}, state) do
               Logger.debug(fn -> "pong" end)
-              # TODO: Check timer diff?
-              Process.send_after(self(), :ping_timer, unquote(opts[:ping_timer]))
+              start_ping_timer()
 
               {:noreply, state}
             end
