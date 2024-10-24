@@ -28,7 +28,7 @@ The package can be installed by adding `wind` to your list of dependencies in `m
 ```elixir
 def deps do
   [
-    {:wind, "~> 0.3.1"}
+    {:wind, "~> 0.3.2"}
   ]
 end
 ```

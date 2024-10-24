@@ -7,9 +7,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-## [0.3.1] - 2024-10-24
+## [0.3.2] - 2024-10-24
 
-- Update dependencies (mint 1.6.2, mint_web_socket 1.0.4).
+- Update dependencies.
+
+## [0.3.1] - 2023-11-12
+
+- Update dependencies.
 
 ## [0.3.0] - 2023-08-25
 
