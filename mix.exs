@@ -29,8 +29,8 @@ defmodule Wind.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:mint, "~> 1.6.2"},
-      {:mint_web_socket, "~> 1.0.4"},
+      {:mint, "~> 1.7"},
+      {:mint_web_socket, "~> 1.0"},
       {:castore, "~> 1.0"},
       {:jason, ">= 0.0.0", only: :dev},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
