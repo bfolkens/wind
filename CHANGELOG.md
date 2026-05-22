@@ -7,6 +7,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [0.3.4] - 2026-05-22
+
+- Update dependencies.
+
 ## [0.3.3] - 2025-08-26
 
 - Update dependencies.
