@@ -54,7 +54,8 @@ defmodule Wind do
 
   """
   @spec setup(Mint.HTTP.t(), Mint.Types.request_ref(), term, list) ::
-          {:ok, Mint.HTTP.t(), Mint.Types.request_ref(), Mint.WebSocket.t(), [Mint.Types.response]}
+          {:ok, Mint.HTTP.t(), Mint.Types.request_ref(), Mint.WebSocket.t(),
+           [Mint.Types.response()]}
           | {:error, Mint.HTTP.t(), Mint.Types.error(), [Mint.Types.response()]}
           | :unknown
   def setup(conn, ref, http_reply_message, opts \\ [])
@@ -68,16 +69,27 @@ defmodule Wind do
 
   defp decode_setup_response(response, ref, out \\ %{})
 
-  defp decode_setup_response([{:status, response_ref, status} | tail], ref, out) when response_ref == ref do
+  defp decode_setup_response([{:status, response_ref, status} | tail], ref, out)
+       when response_ref == ref do
     decode_setup_response(tail, ref, Map.put(out, :status, status))
   end
 
-  defp decode_setup_response([{:headers, response_ref, headers} | tail], ref, out) when response_ref == ref do
-    decode_setup_response(tail, ref, Map.update(out, :headers, headers, fn existing -> [headers | existing] end))
+  defp decode_setup_response([{:headers, response_ref, headers} | tail], ref, out)
+       when response_ref == ref do
+    decode_setup_response(
+      tail,
+      ref,
+      Map.update(out, :headers, headers, fn existing -> [headers | existing] end)
+    )
   end
 
-  defp decode_setup_response([{:data, response_ref, data} | tail], ref, out) when response_ref == ref do
-    decode_setup_response(tail, ref, Map.update(out, :data, data, fn existing -> [data | existing] end))
+  defp decode_setup_response([{:data, response_ref, data} | tail], ref, out)
+       when response_ref == ref do
+    decode_setup_response(
+      tail,
+      ref,
+      Map.update(out, :data, data, fn existing -> [data | existing] end)
+    )
   end
 
   defp decode_setup_response([{:done, response_ref} | tail], ref, out) when response_ref == ref,
@@ -95,7 +107,8 @@ defmodule Wind do
 
   """
   @spec setup_await(Mint.HTTP.t(), Mint.Types.request_ref()) ::
-          {:ok, Mint.HTTP.t(), Mint.Types.request_ref(), Mint.WebSocket.t(), [Mint.Types.response()]}
+          {:ok, Mint.HTTP.t(), Mint.Types.request_ref(), Mint.WebSocket.t(),
+           [Mint.Types.response()]}
           | {:error, Mint.HTTP.t(), Mint.Types.error(), [Mint.Types.response()]}
           | :unknown
   def setup_await(conn, ref)
@@ -137,7 +150,12 @@ defmodule Wind do
       {:ok, conn, websocket}
 
   """
-  @spec send(Mint.HTTP.t(), Mint.Types.request_ref(), Mint.WebSocket.t(), Mint.WebSocket.shorthand_frame() | Mint.WebSocket.frame()) ::
+  @spec send(
+          Mint.HTTP.t(),
+          Mint.Types.request_ref(),
+          Mint.WebSocket.t(),
+          Mint.WebSocket.shorthand_frame() | Mint.WebSocket.frame()
+        ) ::
           {:ok, Mint.HTTP.t(), Mint.WebSocket.t()}
           | {:error, Mint.WebSocket.t(), any}
           | {:error, Mint.HTTP.t(), Mint.WebSocket.error()}
