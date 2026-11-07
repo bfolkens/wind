@@ -63,7 +63,7 @@ jobs:
       run: |
         mix deps.get --check-locked
         mix deps.unlock --check-unused
-        # mix hex.audit
+        mix hex.audit
 
     - name: Compile
       run: mix compile --warnings-as-errors
