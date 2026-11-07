@@ -1,0 +1,68 @@
+name: Elixir Check
+
+on:
+  push
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    name: Test on OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}}
+    strategy:
+      matrix:
+        otp: ['28.3']
+        elixir: ['1.19.5', '1.20.4']
+    steps:
+    - name: Set up Elixir
+      uses: erlef/setup-beam@v1
+      with:
+        otp-version: ${{matrix.otp}}
+        elixir-version: ${{matrix.elixir}}
+
+    - name: Checkout code
+      uses: actions/checkout@v5
+
+    # Define how to cache deps. Restores existing cache if present.
+    - name: Cache deps
+      id: cache-deps
+      uses: actions/cache@v5
+      with:
+        path: deps
+        key: ${{ runner.os }}-mix-${{ env.OTP_VERSION }}-${{ env.ELIXIR_VERSION }}-${{ hashFiles('**/mix.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-mix-${{ env.OTP_VERSION }}-${{ env.ELIXIR_VERSION }}-
+
+    # Define how to cache the `_build` directory. After the first run,
+    # this speeds up tests runs a lot. This includes not re-compiling our
+    # project's downloaded deps every run.
+    - name: Cache compiled build
+      id: cache-build
+      uses: actions/cache@v5
+      with:
+        path: _build
+        key: ${{ runner.os }}-build-${{ env.OTP_VERSION }}-${{ env.ELIXIR_VERSION }}-${{ env.MIX_ENV }}-${{ hashFiles('**/mix.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.OTP_VERSION }}-${{ env.ELIXIR_VERSION }}-${{ env.MIX_ENV }}-
+
+    # Download project dependencies. If unchanged, uses the cached version.
+    - name: Compile dependencies
+      if: steps.cache-deps.outputs.cache-hit != 'true' || github.run_attempt != '1'
+      run: |
+        mix deps.get --check-locked
+        mix deps.unlock --check-unused
+        # mix hex.audit
+
+    - name: Compile
+      run: mix compile --warnings-as-errors
+
+    - name: Check formatting
+      run: mix format --check-formatted
+
+    - name: Run tests
+      run: mix test
