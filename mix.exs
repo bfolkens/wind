@@ -11,6 +11,7 @@ defmodule Wind.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       erlc_paths: erlc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
+      aliases: aliases(Mix.env()),
       deps: deps(),
       package: package(),
       description: description(),
@@ -32,10 +33,20 @@ defmodule Wind.MixProject do
       {:mint, "~> 1.7"},
       {:mint_web_socket, "~> 1.0"},
       {:castore, "~> 1.0"},
+      {:deps_nix, "~> 3.0", only: :dev, runtime: false},
       {:jason, ">= 0.0.0", only: :dev},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
     ]
   end
+
+  defp aliases(:dev) do
+    [
+      "deps.nix": ["deps.nix --output=nix/deps.nix --no-app-config"],
+      "deps.update": ["deps.update", "deps.nix"]
+    ]
+  end
+
+  defp aliases(_), do: []
 
   defp elixirc_paths(:test), do: ["lib", "test/fixtures"]
   defp elixirc_paths(_), do: ["lib"]
