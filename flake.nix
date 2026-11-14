@@ -18,6 +18,18 @@
         "aarch64-darwin"
       ];
 
-      perSystem = import ./nix;
+      perSystem =
+        { pkgs, ... }:
+        let
+          beamPackages = pkgs.beamMinimal28Packages.overrideScope (
+            _: prev: {
+              elixir = prev.elixir_1_20;
+            }
+          );
+        in
+        {
+          devShells.default = import ./nix/shell.nix { inherit pkgs beamPackages; };
+          packages.default = pkgs.callPackage ./nix/package.nix { inherit beamPackages; };
+        };
     };
 }
